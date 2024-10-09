@@ -64,24 +64,22 @@ pixel **somaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int numColun
         }
     }
 
-    printf("\nSomado\n");
     return matrizResultado;
 }
 
 pixel **divideMatrizQuad(pixel **matriz, int numLinhas, int numColunas, int quadRetorno) {
     int i, j;
     int inicioL, inicioC;
-    int fimL, fimC;
     int metLin, metCol;
     pixel **matrizResultado;
-
-    matrizResultado = alocaMatrizPixel(metLin, metLin);
 
     // -- Definindo os Limites dos Quadrantes -- //
     inicioL = 0;
     inicioC = 0;
     metLin = numLinhas/2;
     metCol = numColunas/2;
+
+    matrizResultado = alocaMatrizPixel(metLin, metLin);
 
     if (quadRetorno == 3 || quadRetorno == 4) {
         inicioL = metLin;
@@ -108,6 +106,7 @@ pixel **juntaMatrizQuad(pixel **q1, pixel **q2, pixel **q3, pixel **q4, int numL
     int metLin, metCol;
     pixel **matrizResultado;
 
+
     matrizResultado = alocaMatrizPixel(numLinhas, numColunas);
     metLin = numLinhas/2;
     metCol = numColunas/2;
@@ -120,27 +119,27 @@ pixel **juntaMatrizQuad(pixel **q1, pixel **q2, pixel **q3, pixel **q4, int numL
         }
     }
 
-    for (i = metLin; i < numLinhas; i++) {
+    for (i = 0; i < metLin; i++) {
         for (j = 0; j < metCol; j++) {
-            matrizResultado[i][j].red = q2[i][j].red;
-            matrizResultado[i][j].green = q2[i][j].green;
-            matrizResultado[i][j].blue = q2[i][j].blue;
+            matrizResultado[i][j + metCol].red = q2[i][j].red;
+            matrizResultado[i][j + metCol].green = q2[i][j].green;
+            matrizResultado[i][j + metCol].blue = q2[i][j].blue;
         }
     }
 
     for (i = 0; i < metLin; i++) {
-        for (j = metCol; j < numColunas; j++) {
-            matrizResultado[i][j].red = q3[i][j].red;
-            matrizResultado[i][j].green = q3[i][j].green;
-            matrizResultado[i][j].blue = q3[i][j].blue;
+        for (j = 0; j < metCol; j++) {
+            matrizResultado[i + metLin][j].red = q3[i][j].red;
+            matrizResultado[i + metLin][j].green = q3[i][j].green;
+            matrizResultado[i + metLin][j].blue = q3[i][j].blue;
         }
     }
 
-    for (i = metLin; i < numLinhas; i++) {
-        for (j = metCol; j < numLinhas; j++) {
-            matrizResultado[i][j].red = q4[i][j].red;
-            matrizResultado[i][j].green = q4[i][j].green;
-            matrizResultado[i][j].blue = q4[i][j].blue;
+    for (i = 0; i < metLin; i++) {
+        for (j = 0; j < metCol; j++) {
+            matrizResultado[i + metLin][j + metCol].red = q4[i][j].red;
+            matrizResultado[i + metLin][j + metCol].green = q4[i][j].green;
+            matrizResultado[i + metLin][j + metCol].blue = q4[i][j].blue;
         }
     }
 
@@ -157,22 +156,22 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     
 // -- Caso Base -- //
     if (numLinhas == 1) {
-        printf("\nCaso Base\n");
+        //printf("\nCaso Base\n");
         matrizResultado = alocaMatrizPixel(1, 1);
         
         matrizResultado[0][0].red = (matriz1[0][0].red * matriz2[0][0].red);
-        printf("Red: %d * %d ", matriz1[0][0].red, matriz2[0][0].red);
+        //printf("Red: %d * %d ", matriz1[0][0].red, matriz2[0][0].red);
         matrizResultado[0][0].green = (matriz1[0][0].green * matriz2[0][0].green);
-        printf(" Green: %d * %d ", matriz1[0][0].green, matriz2[0][0].green);
+        //printf(" Green: %d * %d ", matriz1[0][0].green, matriz2[0][0].green);
         matrizResultado[0][0].blue = (matriz1[0][0].blue * matriz2[0][0].blue);
-        printf(" Blue: %d * %d \n", matriz1[0][0].blue, matriz2[0][0].blue);
+        //printf(" Blue: %d * %d \n", matriz1[0][0].blue, matriz2[0][0].blue);
 
 
         return matrizResultado;
     }
-    printf("\nDivisões Matriz\n");
 
 // -- Divisão -- //
+    //printf("Divisoes Matriz\n");
     mA = divideMatrizQuad(matriz1, numLinhas, numColunas, 1);
     mB = divideMatrizQuad(matriz1, numLinhas, numColunas, 2);
     mC = divideMatrizQuad(matriz1, numLinhas, numColunas, 3);
@@ -186,6 +185,7 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     metLin = numLinhas/2;
     metCol = numColunas/2;
     
+    /*
     printf("A\n");
     imprimeMatrizPixel(mA, metLin, metCol);
     printf("\nB\n");
@@ -202,17 +202,19 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     imprimeMatrizPixel(mG, metLin, metCol);
     printf("\nH\n");
     imprimeMatrizPixel(mH, metLin, metCol);
+    */
 
 // -- Multiplicações -- //
-    printf("\n (A * E) + (B * G)\n");
+    //printf("\n (A * E) + (B * G)\n");
     mR = somaMatriz(multiplicaMatriz(mA, mE, metLin, metCol), multiplicaMatriz(mB, mG, metLin, metCol), metLin, metCol);
-    printf("\n (A * F) + (B * H)\n");
+    //printf("\n (A * F) + (B * H)\n");
     mS = somaMatriz(multiplicaMatriz(mA, mF, metLin, metCol), multiplicaMatriz(mB, mH, metLin, metCol), metLin, metCol);
-    printf("\n (C * E) + (D * G)\n");
+    //printf("\n (C * E) + (D * G)\n");
     mT = somaMatriz(multiplicaMatriz(mC, mE, metLin, metCol), multiplicaMatriz(mD, mG, metLin, metCol), metLin, metCol);
-    printf("\n (C * F) + (D * H)\n");
+    //printf("\n (C * F) + (D * H)\n");
     mU = somaMatriz(multiplicaMatriz(mC, mF, metLin, metCol), multiplicaMatriz(mD, mH, metLin, metCol), metLin, metCol);
 
+    /*
     printf("\n\nR\n");
     imprimeMatrizPixel(mR, metLin, metCol);
     printf("\nS\n");
@@ -221,33 +223,46 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     imprimeMatrizPixel(mT, metLin, metCol);
     printf("\nU\n");
     imprimeMatrizPixel(mU, metLin, metCol);
+    */
+    
 
 // -- Conquista -- //
-    printf("\nConquista\n");
+    //printf("\nConquista\n");
     matrizResultado = juntaMatrizQuad(mR, mS, mT, mU, numLinhas, numColunas);
-    printf("\nJunta Matriz Feito\n");
+    //printf("\nJunta Matriz Feito\n");
 
-    printf("\nResultado\n");
-    imprimeMatrizPixel(matrizResultado, numLinhas, numColunas);
-
+    free(mA[0]);
     free(mA);
+    free(mB[0]);
     free(mB);
+    free(mC[0]);
     free(mC);
+    free(mD[0]);
     free(mD);
+    free(mE[0]);
     free(mE);
+    free(mF[0]);
     free(mF);
+    free(mG[0]);
     free(mG);
+    free(mH[0]);
     free(mH);
+    free(mR[0]);
     free(mR);
+    free(mS[0]);
     free(mS);
+    free(mT[0]);
     free(mT);
+    free(mU[0]);
     free(mU);
+
+    //printf("\nResultado\n");
+    //imprimeMatrizPixel(matrizResultado, numLinhas, numColunas);
 
     return matrizResultado;
 }
 
 int main (void) {
-    int i, j;
     char codificacao[2];
     int altura, largura;
     int maxCor;
@@ -274,8 +289,11 @@ int main (void) {
     lerMatrizPixel(mFiltro, largura, altura);
     imprimeMatrizPixel(mFiltro, largura, altura);
 
-    printf("\n\n");
+// --- Multiplicando as Matrizes --- //
     matrizResultado = multiplicaMatriz(matriz, mFiltro, largura, altura);
+
+    printf("\nResultado Final\n");
+    imprimeMatrizPixel(matrizResultado, largura, altura);
 
 // --- Liberando Memória Alocada --- //
     free(mFiltro[0]);
