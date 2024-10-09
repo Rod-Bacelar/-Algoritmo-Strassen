@@ -67,6 +67,23 @@ pixel **somaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int numColun
     return matrizResultado;
 }
 
+pixel **subtraiMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int numColunas) {
+    int i, j;
+    pixel **matrizResultado;
+
+    matrizResultado = alocaMatrizPixel(numLinhas, numColunas);
+
+    for (i = 0; i < numLinhas; i++) {
+        for (j = 0; j < numColunas; j++) {
+            matrizResultado[i][j].red = matriz1[i][j].red - matriz2[i][j].red;
+            matrizResultado[i][j].green = matriz1[i][j].green - matriz2[i][j].green;
+            matrizResultado[i][j].blue = matriz1[i][j].blue - matriz2[i][j].blue;
+        }
+    }
+
+    return matrizResultado;
+}
+
 pixel **divideMatrizQuad(pixel **matriz, int numLinhas, int numColunas, int quadRetorno) {
     int i, j;
     int inicioL, inicioC;
@@ -152,6 +169,7 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     pixel **mA, **mB, **mC, **mD;
     pixel **mE, **mF, **mG, **mH;
     pixel **mR, **mS, **mT, **mU;
+    pixel **p1, **p2, **p3, **p4, **p5, **p6, **p7;
 
     
 // -- Caso Base -- //
@@ -205,6 +223,7 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     */
 
 // -- Multiplicações -- //
+    /*
     //printf("\n (A * E) + (B * G)\n");
     mR = somaMatriz(multiplicaMatriz(mA, mE, metLin, metCol), multiplicaMatriz(mB, mG, metLin, metCol), metLin, metCol);
     //printf("\n (A * F) + (B * H)\n");
@@ -214,7 +233,6 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     //printf("\n (C * F) + (D * H)\n");
     mU = somaMatriz(multiplicaMatriz(mC, mF, metLin, metCol), multiplicaMatriz(mD, mH, metLin, metCol), metLin, metCol);
 
-    /*
     printf("\n\nR\n");
     imprimeMatrizPixel(mR, metLin, metCol);
     printf("\nS\n");
@@ -225,11 +243,13 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     imprimeMatrizPixel(mU, metLin, metCol);
     */
     
-
-// -- Conquista -- //
-    //printf("\nConquista\n");
-    matrizResultado = juntaMatrizQuad(mR, mS, mT, mU, numLinhas, numColunas);
-    //printf("\nJunta Matriz Feito\n");
+    p1 = multiplicaMatriz(mA, subtraiMatriz(mF, mH, metLin, metCol), metLin, metCol);
+    p2 = multiplicaMatriz(somaMatriz(mA, mB, metLin, metCol), mH, metLin, metCol);
+    p3 = multiplicaMatriz(somaMatriz(mC, mD, metLin, metCol), mE, metLin, metCol);
+    p4 = multiplicaMatriz(mD, subtraiMatriz(mG, mE, metLin, metCol), metLin, metCol);
+    p5 = multiplicaMatriz(somaMatriz(mA, mD, metLin, metCol), somaMatriz(mE, mH, metLin, metCol), metLin, metCol);
+    p6 = multiplicaMatriz(subtraiMatriz(mB, mD, metLin, metCol), somaMatriz(mG, mH, metLin, metCol), metLin, metCol);
+    p7 = multiplicaMatriz(subtraiMatriz(mA, mC, metLin, metCol), somaMatriz(mE, mF, metLin, metCol), metLin, metCol);
 
     free(mA[0]);
     free(mA);
@@ -247,6 +267,23 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     free(mG);
     free(mH[0]);
     free(mH);
+
+    mR = somaMatriz(subtraiMatriz(somaMatriz(p5, p4, metLin, metCol), p2, metLin, metCol), p6, metLin, metCol);
+
+    mS = somaMatriz(p1, p2, metLin, metCol);
+
+    mT = somaMatriz(p3, p4, metLin, metCol);
+
+    mU = subtraiMatriz(subtraiMatriz(somaMatriz(p1, p5, metLin, metCol), p3, metLin, metCol), p7, metLin, metCol);
+
+
+// -- Conquista -- //
+    //printf("\nConquista\n");
+    matrizResultado = juntaMatrizQuad(mR, mS, mT, mU, numLinhas, numColunas);
+    //printf("\nJunta Matriz Feito\n");
+
+    //printf("\nResultado\n");
+    //imprimeMatrizPixel(matrizResultado, numLinhas, numColunas);
     free(mR[0]);
     free(mR);
     free(mS[0]);
@@ -255,9 +292,6 @@ pixel **multiplicaMatriz(pixel **matriz1, pixel **matriz2, int numLinhas, int nu
     free(mT);
     free(mU[0]);
     free(mU);
-
-    //printf("\nResultado\n");
-    //imprimeMatrizPixel(matrizResultado, numLinhas, numColunas);
 
     return matrizResultado;
 }
@@ -282,12 +316,12 @@ int main (void) {
 // --- Lendo a Matriz Original --- //
     matriz = alocaMatrizPixel(largura, altura);
     lerMatrizPixel(matriz, largura, altura);
-    imprimeMatrizPixel(matriz, largura, altura);
+    //imprimeMatrizPixel(matriz, largura, altura);
 
 // --- Lendo a Matriz Filtro --- //
     mFiltro = alocaMatrizPixel(largura, altura);
     lerMatrizPixel(mFiltro, largura, altura);
-    imprimeMatrizPixel(mFiltro, largura, altura);
+    //imprimeMatrizPixel(mFiltro, largura, altura);
 
 // --- Multiplicando as Matrizes --- //
     matrizResultado = multiplicaMatriz(matriz, mFiltro, largura, altura);
